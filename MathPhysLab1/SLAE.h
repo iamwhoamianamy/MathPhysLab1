@@ -32,11 +32,13 @@ public:
       index[3] = 1;
       index[4] = 2 + GAP;
 
+      matrix.resize(D);
       for(int i = 0; i < D; i++)
-         matrix.resize(N);
+         matrix[i].resize(N);
 
       xk.resize(N);
       xk1.resize(N);
+      f.resize(N);
    }
 
    // Умножение матрицы системы на вектор vec,
@@ -95,12 +97,12 @@ public:
          for(int j = 0; j < N; j++)
          {
             IterativeProcess(j, sum);
-            xk1[j] = xk[j] + (RELAX / matrix[3][j]) * (f[j] - sum);
+            xk1[j] = xk[j] + (RELAX / matrix[2][j]) * (f[j] - sum);
             sum = 0.;
          }
          xk.swap(xk1);
          residual = RelativeResidual(xk);
-         cout << k << " " << residual << endl;
+         //cout << k << " " << residual << endl;
       }
    }
 };
