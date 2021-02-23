@@ -143,8 +143,9 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="EllipticalProblem.h" />
-    <ClInclude Include="matrix.h" />
-    <ClInclude Include="test.h" />
+    <ClInclude Include="SLAE.h" />
+    <ClInclude Include="Test.h" />
+    <ClInclude Include="Vector.h" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="coords.txt" />

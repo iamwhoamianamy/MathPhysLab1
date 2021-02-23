@@ -2,39 +2,40 @@
 #include <vector>
 #include <fstream>
 #include <string>
-#include "matrix.h"
+#include "SLAE.h"
+#include "Test.h"
 
 using namespace std;
 
 class EllipticalProblem
 {
 public:
-   vector<double> Xr;            // Границы области по X
-   vector<double> Yr;            // Границы области по Y
+   vector<double> Xr;                  // Границы области по X
+   vector<double> Yr;                  // Границы области по Y
 
-   vector<double> Xn;            // Координаты узлов по X
-   vector<double> Yn;            // Координаты узлов по Y
+   vector<double> Xn;                  // Координаты узлов по X
+   vector<double> Yn;                  // Координаты узлов по Y
 
-   matrix* MainMatrix;           // Матрица системы
+   SLAE* slae;                         // Система
 
    EllipticalProblem()
    {
       Xr = vector<double>(3);
       Yr = vector<double>(3);
 
-      read_coord_lines("coords.txt");
+      ReadCoordLines("coords.txt");
 
-      MainMatrix = new matrix(pow(Xn.size() + Yn.size(), 2));
+      slae = new SLAE(Xn.size() * Yn.size(), Xn.size());
    }
 
    ~EllipticalProblem()
    {
-      delete MainMatrix;
+      delete slae;
    }
 
    // Функция считывания границ области из файла FILE_NAME,
    // генерация координат узлов
-   void read_coord_lines(const string& FILE_NAME)
+   void ReadCoordLines(const string& FILE_NAME)
    {
       std::ifstream fin(FILE_NAME);
 
@@ -45,7 +46,7 @@ public:
       for(int i = 0; i < 3; i++)
          fin >> Yr[i];
 
-      // Генерация координат уззлов по X
+      // Генерация координат узлов по X
       int count = 0;        // Число узлов по X
       int t1, t2;
 
@@ -63,7 +64,7 @@ public:
       for(int i = 0; i <= t2; i++)
          Xn[i + t1] = Xr[1] + (Xr[2] - Xr[1]) / t2 * i;
 
-      // Генерация координат уззлов по Y
+      // Генерация координат узлов по Y
       count = 0;        // Число узлов по Y
 
       fin >> t1;
@@ -79,5 +80,14 @@ public:
 
       for(int i = 0; i <= t2; i++)
          Yn[i + t1] = Yr[1] + (Yr[2] - Yr[1]) / t2 * i;
+   }
+
+   // Формирование матрицы системы
+   void FormMatrix()
+   {
+      for(int n = 0; n < slae->N; n++)
+      {
+         
+      }
    }
 };

@@ -2,12 +2,12 @@
 #include <vector>
 using namespace std;
 
-class test
+class Test
 {
 public:
-   double f(double x, double y)
+   double f(const double& X, const double& Y)
    {
-      return x + y;
+      return X + Y;
    }
 
    double lambda()
@@ -20,8 +20,8 @@ public:
       return 1 ;
    }
 
-   double u(double x, double y)
+   double u(const double& X, const double& Y)
    {
-      return x + y;
+      return X + Y;
    }
 };
