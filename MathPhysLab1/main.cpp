@@ -9,7 +9,27 @@ void main()
    
    ep.FormMatrix();
 
-   ep.slae->GaussSeidel(1000, 10e-10, 0.1);
+   ep.slae->GaussSeidel(10000, 10e-14, 0.65);
+
+   /*vector<double> prec(ep.slae->N);
+
+   for (int j = 0; j < ep.Yn.size(); j++)
+   {
+      for (int i = 0; i < ep.Xn.size(); i++)
+      {
+         
+         prec[j * ep.Xn.size() + i] = ep.test.u(ep.Xn[i], ep.Yn[j]);
+      }
+   }
+
+   vector<double> calc(ep.slae->N);
+
+   ep.slae->Multiplication(prec, calc);*/
+
+   //for (int i = 0; i < ep.slae->N; i++)
+   //{
+   //   cout << calc[i] << endl;
+   //}
 
    cout << "x           y           calc        prec       dif" << endl;
    

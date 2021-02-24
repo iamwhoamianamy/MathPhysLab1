@@ -103,6 +103,7 @@ public:
             // Приросты по Y
             double hj = Yn[y_cent + 1] - Yn[y_cent + 0];
             double hj1 = Yn[y_cent - 0] - Yn[y_cent - 1];
+            
             // Нижний узел
             slae->matrix[0][n] = -test.lambda() *
                (2.0 / (hj1 * (hj + hj1)));
@@ -119,7 +120,7 @@ public:
             slae->matrix[3][n] = -test.lambda() *
                (2.0 / (hi * (hi + hi1)));
 
-            // Нижний узел
+            // Верхний узел
             slae->matrix[4][n] = -test.lambda() *
                (2.0 / (hj * (hj + hj1)));
 
@@ -129,7 +130,7 @@ public:
          // Обработка краевого узла
          else
          {
-            slae->matrix[2][n] = 1;
+            slae->matrix[2][n] = 1.0;
             slae->f[n] = test.u(Xn[x_cent], Yn[y_cent]);
          }
       }

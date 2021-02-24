@@ -17,7 +17,7 @@ public:
 
    double gamma()
    {
-      return 1000;
+      return 1;
    }
 
    double u(const double& X, const double& Y)

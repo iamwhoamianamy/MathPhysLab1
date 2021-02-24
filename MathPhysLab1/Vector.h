@@ -4,61 +4,61 @@
 #include <fstream>
 using namespace std;
 
-typedef double real;
 
 // Умножение вектора на число
-vector<real> operator * (real val, const vector<real>& vec)
+vector<double> operator * (double val, const vector<double>& vec)
 {
-   vector<real> res(vec.size());
-
-   for (size_t i = 0; i < vec.size(); ++i)
+   size_t n = vec.size();
+   vector<double> res(n);
+   
+   for (size_t i = 0; i < n; ++i)
       res[i] = val * vec[i];
    return res;
 }
 
 // Сложение векторов
-vector<real> operator + (const vector<real>& vec1, const vector<real>& vec2)
+vector<double> operator + (const vector<double>& vec1, const vector<double>& vec2)
 {
-   if (vec1.size() != vec2.size())
+   size_t n = vec1.size();
+   if (n != vec2.size())
       throw("a.size() != b.size()");
 
-   vector<real> res(vec1.size());
+   vector<double> res(n);
 
-   for (size_t i = 0; i < vec1.size(); ++i)
+   for (size_t i = 0; i < n; ++i)
       res[i] = vec1[i] + vec2[i];
    return res;
 }
 
 // Вычитание векторов
-vector<real> operator - (const vector<real>& vec1, const vector<real>& vec2)
+vector<double> operator - (const vector<double>& vec1, const vector<double>& vec2)
 {
-   if (vec1.size() != vec2.size())
+   size_t n = vec1.size();
+   if (n != vec2.size())
      throw("a.size() != b.size()");
 
-   vector<real> res(vec1.size());
+   vector<double> res(n);
 
-   for (size_t i = 0; i < vec1.size(); ++i)
+   for (size_t i = 0; i < n; ++i)
       res[i] = vec1[i] - vec2[i];
    return res;
 }
 
 // Скалярное произведение векторов
-real operator *(const vector<real>& vec1, const vector<real>& vec2)
+double operator *(const vector<double>& vec1, const vector<double>& vec2)
 {
-   if (vec1.size() != vec2.size())
+   size_t n = vec1.size();
+   if (n != vec2.size())
       throw("vec1.size() != vec2.size()");
 
-   int n = vec1.size();
-   real res = 0;
-
+   double res = 0;
    for (int i = 0; i < n; i++)
       res += vec1[i] * vec2[i];
-
    return res;
 }
 
 // Норма вектора
-real Norm(const vector<real>& vec)
+double Norm(const vector<double>& vec)
 {
    return sqrt(vec * vec);
 }

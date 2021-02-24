@@ -13,26 +13,24 @@ public:
 
    const int D = 5;               // Количество диагоналей матрицы
    int N = 0;                     // Размерность матрицы
-   int GAP = 0;                   // Расстояние до крайних диагоналей
+   int M = 0;                     // Расстояние до крайних диагоналей
 
    vector<double> xk, xk1;  // Вспомогательные векторы
 
-   //const double EPS = 10e-10;     // Точность решения
-   //const double MAX_ITER = 1000;  // Максимальное число итераций
-
    SLAE(const int& N, const int& N_X)
    {
-      GAP = N_X - 1;
+      M = N_X - 2;
       this->N = N;
 
       index.resize(D);
-      index[0] = -(2 + GAP);
+      index[0] = -(2 + M);
       index[1] = -1;
       index[2] = 0;
       index[3] = 1;
-      index[4] = 2 + GAP;
+      index[4] = 2 + M;
 
       matrix.resize(D);
+
       for(int i = 0; i < D; i++)
          matrix[i].resize(N);
 
@@ -64,7 +62,7 @@ public:
       vector<double> mult(N);
 
       Multiplication(vec, mult);
-       mult = f - mult;
+      mult = f - mult;
 
       return Norm(mult) / Norm(f);
    }
