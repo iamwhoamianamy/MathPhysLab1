@@ -16,6 +16,14 @@ public:
    vector<double> Xn;                  // Координаты узлов по X
    vector<double> Yn;                  // Координаты узлов по Y
 
+   int N_X;                            // Количество узлов по X
+   int N_Y;                            // Количество узлов по Y
+
+   int x_bord;                         // Индекс внутренней границы
+                                       // L области по X
+   int y_bord;                         // Индекс внутренней границы
+                                       // L области по Y
+
    SLAE* slae;                         // Система
    Test test;                          // Тестовая информация
 
@@ -26,7 +34,7 @@ public:
 
       ReadCoordLines("coords.txt");
 
-      slae = new SLAE(Xn.size() * Yn.size(), Xn.size());
+      slae = new SLAE(N_X * N_Y, N_X);
    }
 
    ~EllipticalProblem()
@@ -57,7 +65,10 @@ public:
       fin >> t2;
       count += t2;
 
-      Xn.resize(count + 1);
+      N_X = count + 1;
+      x_bord = t1;
+
+      Xn.resize(N_X);
 
       for(int i = 0; i <= t1; i++)
          Xn[i] = Xr[0] + (Xr[1] - Xr[0]) / t1 * i;
@@ -74,7 +85,10 @@ public:
       fin >> t2;
       count += t2;
 
-      Yn.resize(count + 1);
+      N_Y = count + 1;
+      y_bord = t1;
+
+      Yn.resize(N_Y);
 
       for(int i = 0; i <= t1; i++)
          Yn[i] = Yr[0] + (Yr[1] - Yr[0]) / t1 * i;
@@ -89,12 +103,14 @@ public:
       for(int n = 0; n < slae->N; n++)
       {
          // Индексы центрального узла
-         int x_cent = n % Xn.size();
-         int y_cent = floor(n / Xn.size());
+         int x_cent = n % N_X;
+         int y_cent = floor(n / N_X);
 
-         // Обработка некраевого узла
-         if(x_cent > 0 && x_cent < Xn.size() - 1 &&
-            y_cent > 0 && y_cent < Yn.size() - 1)
+         // Обработка некраевых узлов внутри L-формы
+         if(x_cent < N_X - 1 && x_cent > 0 &&
+            y_cent < y_bord - 1 && y_cent > 0 || 
+            x_cent < x_bord - 1 && x_cent > 0 &&
+            y_cent < N_Y - 1 && y_cent > 0)
          {
             // Приросты по X
             double hi = Xn[x_cent + 1] - Xn[x_cent + 0];
@@ -128,10 +144,41 @@ public:
             slae->f[n] = test.f(Xn[x_cent], Yn[y_cent]);
          }
          // Обработка краевого узла
-         else
+         else if(x_cent <= x_bord || y_cent <= y_bord)
          {
             slae->matrix[2][n] = 1.0;
             slae->f[n] = test.u(Xn[x_cent], Yn[y_cent]);
+         }
+         else
+            slae->matrix[2][n] = 1.0;
+      }
+   }
+
+   // Вывод решения
+   void PrintSolution()
+   {
+      cout << "x           y           calc        prec       dif        N" << endl;
+      cout << fixed;
+      for(int j = 0; j < N_Y; j++)
+      {
+         for(int i = 0; i < N_X; i++)
+         {
+            int n = j * N_Y + i;
+            cout << Yn[j];
+            cout << setw(12) << Xn[i];
+            double t = slae->xk[n];
+            cout << setw(12) << t;
+            double tt = test.u(Xn[i], Yn[j]);
+            cout << setw(12) << tt;
+            cout << setw(15) << scientific <<
+               abs(t - tt);
+            cout << fixed << setw(5) << n;
+
+            if(j > y_bord && i > x_bord)
+               cout << "  +";
+
+            cout << endl;
+
          }
       }
    }
