@@ -37,10 +37,11 @@ public:
       y_reg = vector<double>(3);
 
       ReadCoordLines("coords.txt");
-      FormBordConditions("borders.txt");
 
+      double h;
       // Генерация координат узлов по X
-      double h = (x_reg[1] - x_reg[0]) / x_bord;
+      
+      h = (x_reg[1] - x_reg[0]) / x_bord;
 
       for(int i = 0; i <= x_bord; i++)
          x_node[i] = x_reg[0] + h * i;
@@ -60,6 +61,18 @@ public:
 
       for(int i = 0; i <= (N_Y - y_bord - 1); i++)
          y_node[i + y_bord] = y_reg[1] + h * i;
+
+      ReadBordConditions("borders.txt");
+
+      // Формирование индексов границ ребер с соответсвующими
+      // краевыми условиями
+      for(int i = 0; i < N_BORD; i++)
+      {
+         borders[i][1] = CorrespondX(borders[i][1]);
+         borders[i][2] = CorrespondX(borders[i][2]);
+         borders[i][3] = CorrespondY(borders[i][3]);
+         borders[i][4] = CorrespondY(borders[i][4]);
+      }
 
       // Инициализация СЛАУ
       slae = new SLAE(N_X * N_Y, N_X);
@@ -86,7 +99,7 @@ public:
          fin >> y_reg[i];
 
       // Считывание координатных линий по X
-      int count = 0;        // Число узлов по X
+      int count = 0;    // Число узлов по X
       int t1, t2;
 
       fin >> t1;
@@ -136,8 +149,9 @@ public:
       }
    }
 
-
-   void FormBordConditions(const string& FILE_NAME)
+   // Функция считывания индексов для описания краевых условий
+   // из файла FILE_NAME
+   void ReadBordConditions(const string& FILE_NAME)
    {
       ifstream fin(FILE_NAME);
 
@@ -147,20 +161,8 @@ public:
       {
          borders[i].resize(5);
 
-         int t, x0, x1, y0, y1;
-
-         fin >> t;
-         borders[i][0] = t;
-
-         fin >> x0;
-         fin >> x1;
-         fin >> y0;
-         fin >> y1;
-
-          borders[i][1] = CorrespondX(x0);
-          borders[i][2] = CorrespondX(x1);
-          borders[i][3] = CorrespondY(y0);
-          borders[i][4] = CorrespondY(y1);
+         for(int j = 0; j < 5; j++)
+            fin >> borders[i][j];
       }
 
       fin.close();
@@ -198,7 +200,7 @@ public:
                (2.0 / (hi1 * (hi + hi1)));
 
             // Центральный узел
-            slae->matrix[2][n] = test.lambda() *
+            slae->matrix[2][n] = +test.lambda() *
                (2.0 / (hi1 * hi) + 2.0 / (hj1 * hj)) + test.gamma();
 
             // Правый узел
@@ -215,11 +217,10 @@ public:
          // Обработка краевого узла
          else if(x_cent <= x_bord || y_cent <= y_bord)
          {
-            /*slae->matrix[2][n] = 1.0;
-            slae->f[n] = test.u(x_node[x_cent], y_node[y_cent]);*/
-
+            // Обход по всем ребрам
             for(int b = 0; b < N_BORD; b++)
             {
+               // Условие узла нахождения на ребре b
                if(x_cent >= borders[b][1] && x_cent <= borders[b][2] &&
                   y_cent >= borders[b][3] && y_cent <= borders[b][4])
                {
@@ -232,7 +233,39 @@ public:
                   // Второе краевое условие
                   else if(borders[b][0] == 1)
                   {
+                     // Если ребро параллельно оси X
+                     if(borders[b][3] == borders[b][4])
+                     {
+                        double h = x_node[x_cent + 1] - x_node[x_cent - 1];
 
+                        slae->matrix[1][n] = -test.lambda() / h;
+                        slae->matrix[3][n] = +test.lambda() / h;
+
+                        // Если нормаль направлена вниз
+                        if(y_cent == 0)
+                        {
+                           slae->matrix[1][n] *= -1;
+                           slae->matrix[3][n] *= -1;
+                        }
+                     }
+                     // Если ребро параллельно оси Y
+                     else if(borders[b][1] == borders[b][2])
+                     {
+                        double h = y_node[y_cent + 1] - y_node[y_cent - 1];
+
+                        slae->matrix[0][n] = -test.lambda() / h;
+                        slae->matrix[4][n] = +test.lambda() / h;
+
+                        // Если нормаль направлена влево
+                        if(x_cent == 0)
+                        {
+                           slae->matrix[0][n] *= -1;
+                           slae->matrix[4][n] *= -1;
+                        }
+                     }
+
+                     slae->matrix[2][n] = test.gamma();
+                     slae->f[n] = test.f(x_node[x_cent], y_node[y_cent]);
                   }
 
                   break;

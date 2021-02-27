@@ -34,6 +34,11 @@ public:
       return 1;
    }
 
+   double theta()
+   {
+      return 1;
+   }
+
    double u(const double& X, const double& Y)
    {
       switch(N)
