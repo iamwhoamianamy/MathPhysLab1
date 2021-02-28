@@ -78,7 +78,7 @@ public:
       slae = new SLAE(N_X * N_Y, N_X);
 
       // Инициализация тестовых данных
-      test = Test(3);
+      test = Test(5);
    }
 
    ~EllipticalProblem()
@@ -283,7 +283,7 @@ public:
    {
       int w = ceil(log10(N_X * N_Y)) + 2;
 
-      cout << "x         y         calc      prec      dif         ";
+      cout << " x          y              calc           prec      dif         ";
       
       for(int i = 0; i < w - 1; i++)
          cout << " ";
@@ -294,28 +294,31 @@ public:
          for(int i = 0; i < N_X; i++)
          {
             int n = j * N_X + i;
-            cout << y_node[j];
-            cout << setw(10) << x_node[i];
-            double t = slae->xk[n];
-            cout << setw(10) << t;
-            double tt = 0;
-            if (i <= x_bord || j <= y_bord) tt = test.u(x_node[i], y_node[j]);
-            cout << setw(10) << tt;
-            cout << setw(14) << scientific <<
-               abs(t - tt);
-            cout << fixed << setw(w) << n;
+            if (i % 2 == 0 && j % 2 == 0)
+            {
+               cout << setw(9) << y_node[j];
+               cout << setw(11) << x_node[i];
+               double t = slae->xk[n];
+               cout << setw(15) << t;
+               double tt = 0;
+               if (i <= x_bord || j <= y_bord) tt = test.u(x_node[i], y_node[j]);
+               cout << setw(15) << tt;
+               cout << setw(14) << scientific <<
+                  abs(t - tt);
+               cout << fixed << setw(w) << n;
 
-            if(i < N_X - 1 && i > 0 &&
-               j < y_bord && j > 0 ||
-               i < x_bord && i > 0 &&
-               j < N_Y - 1 && j > 0)
-               cout << "  inner";
-            else if(i <= x_bord || j <= y_bord)
-               cout << "  border";
-            else
-               cout << "  outer";
+               if (i < N_X - 1 && i > 0 &&
+                  j < y_bord && j > 0 ||
+                  i < x_bord && i > 0 &&
+                  j < N_Y - 1 && j > 0)
+                  cout << "  inner";
+               else if (i <= x_bord || j <= y_bord)
+                  cout << "  border";
+               else
+                  cout << "  outer";
 
-            cout << endl;
+               cout << endl;
+            }
          }
       }
    }
