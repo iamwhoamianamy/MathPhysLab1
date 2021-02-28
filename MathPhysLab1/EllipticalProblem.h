@@ -78,7 +78,7 @@ public:
       slae = new SLAE(N_X * N_Y, N_X);
 
       // Инициализация тестовых данных
-      test = Test(5);
+      test = Test(2);
    }
 
    ~EllipticalProblem()
@@ -294,7 +294,7 @@ public:
          for(int i = 0; i < N_X; i++)
          {
             int n = j * N_X + i;
-            if (i % 2 == 0 && j % 2 == 0)
+            //if (i % 2 == 0 && j % 2 == 0)
             {
                cout << setw(9) << y_node[j];
                cout << setw(11) << x_node[i];
