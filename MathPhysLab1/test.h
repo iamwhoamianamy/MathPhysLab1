@@ -20,7 +20,8 @@ public:
       case(0): return (0)* lambda() + u(X, Y) * gamma();
       case(1): return (0)* lambda() + u(X, Y) * gamma();
       case(2): return (-4)* lambda() + u(X, Y) * gamma();
-      case(3): return (-6 * X - 6 * Y)* lambda() + u(X, Y) * gamma();
+      case(3): return (-6 * X - 6 * Y) * lambda() + u(X, Y) * gamma();
+      case(4): return (-12 * X * X - 12 * Y * Y) * lambda() + u(X, Y) * gamma();
       };
    }
 
@@ -47,6 +48,7 @@ public:
       case(1): return X + Y;
       case(2): return X * X + Y * Y;
       case(3): return X * X * X + Y * Y * Y;
+      case(4): return X * X * X * X + Y * Y * Y * Y;
       };
    }
 };
