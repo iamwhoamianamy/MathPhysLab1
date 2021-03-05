@@ -35,50 +35,6 @@ public:
    {
       x_reg = vector<double>(3);
       y_reg = vector<double>(3);
-
-      ReadCoordLines("coords.txt");
-
-      double h;
-      // Генерация координат узлов по X
-      
-      h = (x_reg[1] - x_reg[0]) / x_bord;
-
-      for(int i = 0; i <= x_bord; i++)
-         x_node[i] = x_reg[0] + h * i;
-
-      h = (x_reg[2] - x_reg[1]) / (N_X - x_bord - 1);
-
-      for(int i = 0; i <= N_X - x_bord - 1; i++)
-         x_node[i + x_bord] = x_reg[1] + h * i;
-
-      // Генерация координат узлов по Y
-      h = (y_reg[1] - y_reg[0]) / y_bord;
-
-      for(int i = 0; i <= y_bord; i++)
-         y_node[i] = y_reg[0] + h * i;
-
-      h = (y_reg[2] - y_reg[1]) / (N_Y - y_bord - 1);
-
-      for(int i = 0; i <= (N_Y - y_bord - 1); i++)
-         y_node[i + y_bord] = y_reg[1] + h * i;
-
-      ReadBordConditions("borders.txt");
-
-      // Формирование индексов границ ребер с соответсвующими
-      // краевыми условиями
-      for(int i = 0; i < N_BORD; i++)
-      {
-         borders[i][1] = CorrespondX(borders[i][1]);
-         borders[i][2] = CorrespondX(borders[i][2]);
-         borders[i][3] = CorrespondY(borders[i][3]);
-         borders[i][4] = CorrespondY(borders[i][4]);
-      }
-
-      // Инициализация СЛАУ
-      slae = new SLAE(N_X * N_Y, N_X);
-
-      // Инициализация тестовых данных
-      test = Test(2);
    }
 
    ~EllipticalProblem()
@@ -87,7 +43,8 @@ public:
    }
 
    // Функция считывания границ области из файла FILE_NAME
-   void ReadCoordLines(const string& FILE_NAME)
+   // для формирования равномерной сетки
+   void ReadCoordLinesEven(const string& FILE_NAME)
    {
       ifstream fin(FILE_NAME);
 
@@ -130,6 +87,34 @@ public:
       fin.close();
    }
 
+   // Формирование равномерной сетки
+   void FormGridEven()
+   {
+      double h;
+      // Генерация координат узлов по X
+
+      h = (x_reg[1] - x_reg[0]) / x_bord;
+
+      for(int i = 0; i <= x_bord; i++)
+         x_node[i] = x_reg[0] + h * i;
+
+      h = (x_reg[2] - x_reg[1]) / (N_X - x_bord - 1);
+
+      for(int i = 0; i <= N_X - x_bord - 1; i++)
+         x_node[i + x_bord] = x_reg[1] + h * i;
+
+      // Генерация координат узлов по Y
+      h = (y_reg[1] - y_reg[0]) / y_bord;
+
+      for(int i = 0; i <= y_bord; i++)
+         y_node[i] = y_reg[0] + h * i;
+
+      h = (y_reg[2] - y_reg[1]) / (N_Y - y_bord - 1);
+
+      for(int i = 0; i <= (N_Y - y_bord - 1); i++)
+         y_node[i + y_bord] = y_reg[1] + h * i;
+   }
+
    int CorrespondX(const int& I)
    {
       switch(I)
@@ -166,6 +151,19 @@ public:
       }
 
       fin.close();
+   }
+
+   // Функция формирования индексов границ ребер с соответсвующими
+   // краевыми условиями
+   void FormBordConditions()
+   {
+      for(int i = 0; i < N_BORD; i++)
+      {
+         borders[i][1] = CorrespondX(borders[i][1]);
+         borders[i][2] = CorrespondX(borders[i][2]);
+         borders[i][3] = CorrespondY(borders[i][3]);
+         borders[i][4] = CorrespondY(borders[i][4]);
+      }
    }
 
    // Формирование матрицы системы
@@ -247,6 +245,11 @@ public:
                            slae->matrix[1][n] *= -1;
                            slae->matrix[3][n] *= -1;
                         }
+                        // Если нормаль направлена вверх
+                        else
+                        {
+
+                        }
                      }
                      // Если ребро параллельно оси Y
                      else if(borders[b][1] == borders[b][2])
@@ -261,6 +264,11 @@ public:
                         {
                            slae->matrix[0][n] *= -1;
                            slae->matrix[4][n] *= -1;
+                        }
+                        // Если нормаль направлена вправо
+                        else
+                        {
+
                         }
                      }
 

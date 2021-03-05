@@ -6,6 +6,18 @@ using namespace std;
 void main()
 {
    EllipticalProblem ep = EllipticalProblem();
+
+   ep.ReadCoordLinesEven("coords.txt");
+   ep.FormGridEven();
+
+   ep.ReadBordConditions("borders.txt");
+   ep.FormBordConditions();
+   
+   // Инициализация СЛАУ
+   ep.slae = new SLAE(ep.N_X * ep.N_Y, ep.N_X);
+
+   // Инициализация тестовых данных
+   ep.test = Test(2);
    
    ep.FormMatrix();
 
