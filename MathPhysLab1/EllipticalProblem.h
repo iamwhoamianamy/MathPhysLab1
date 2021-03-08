@@ -43,8 +43,8 @@ public:
    }
 
    // Функция считывания границ области из файла FILE_NAME
-   // для формирования равномерной сетки
-   void ReadCoordLinesEven(const string& FILE_NAME)
+   // и формирования сетки
+   void FormGridEven(const string& FILE_NAME)
    {
       ifstream fin(FILE_NAME);
 
@@ -55,64 +55,68 @@ public:
       for(int i = 0; i < 3; i++)
          fin >> y_reg[i];
 
-      // Считывание координатных линий по X
-      int count = 0;    // Число узлов по X
-      int t1, t2;
+      // Генерация координат узлов по X
+      int q, n;
+      double h;
 
-      fin >> t1;
-      count += t1;
-
-      fin >> t2;
-      count += t2;
-
-      N_X = count + 1;
-      x_bord = t1;
-
+      fin >> q >> n;
+      N_X = n + 1;
+      x_bord = n;
       x_node.resize(N_X);
 
-      // Считывание координатных линий по Y
-      count = 0;        // Число узлов по Y
+      h = (x_reg[1] - x_reg[0]);
+      if (q != 1)
+         h *= (1 - q) / (1 - pow(q, n));
+      else
+         h /= n;
 
-      fin >> t1;
-      count += t1;
+      x_node[0] = x_reg[0];
+      for (int i = 0; i < n; i++)
+         x_node[i + 1] = x_node[i] + h * pow(q, i);
 
-      fin >> t2;
-      count += t2;
+      fin >> q >> n;
+      N_X += n;
+      x_node.resize(N_X);
 
-      N_Y = count + 1;
-      y_bord = t1;
+      h = (x_reg[2] - x_reg[1]);
+      if (q != 1)
+         h *= (1 - q) / (1 - pow(q, n));
+      else
+         h /= n;
 
-      y_node.resize(N_Y);
-
-      fin.close();
-   }
-
-   // Формирование равномерной сетки
-   void FormGridEven()
-   {
-      double h;
-      // Генерация координат узлов по X
-
-      h = (x_reg[1] - x_reg[0]) / x_bord;
-
-      for(int i = 0; i <= x_bord; i++)
-         x_node[i] = x_reg[0] + h * i;
-
-      h = (x_reg[2] - x_reg[1]) / (N_X - x_bord - 1);
-
-      for(int i = 0; i <= N_X - x_bord - 1; i++)
-         x_node[i + x_bord] = x_reg[1] + h * i;
+      for (int i = 1; i <= n; i++)
+         x_node[i + x_bord] = x_node[i + x_bord - 1] + h * pow(q, i - 1);
 
       // Генерация координат узлов по Y
-      h = (y_reg[1] - y_reg[0]) / y_bord;
+      fin >> q >> n;
+      N_Y = n + 1;
+      y_bord = n;
+      y_node.resize(N_Y);
 
-      for(int i = 0; i <= y_bord; i++)
-         y_node[i] = y_reg[0] + h * i;
+      h = (y_reg[1] - y_reg[0]);
+      if (q != 1)
+         h *= (1 - q) / (1 - pow(q, n));
+      else
+         h /= n;
 
-      h = (y_reg[2] - y_reg[1]) / (N_Y - y_bord - 1);
+      y_node[0] = y_reg[0];
+      for (int i = 0; i < n; i++)
+         y_node[i+1] = y_node[i] + h * pow(q, i);
 
-      for(int i = 0; i <= (N_Y - y_bord - 1); i++)
-         y_node[i + y_bord] = y_reg[1] + h * i;
+      fin >> q >> n;
+      N_Y += n;
+      y_node.resize(N_Y);
+
+      h = (y_reg[2] - y_reg[1]);
+      if (q != 1)
+         h *= (1 - q) / (1 - pow(q, n));
+      else
+         h /= n;
+
+      for (int i = 1; i <= n; i++)
+         y_node[i + y_bord] = y_node[i + y_bord - 1] + h * pow(q, i - 1);
+
+      fin.close();
    }
 
    int CorrespondX(const int& I)
@@ -286,17 +290,18 @@ public:
       }
    }
 
-   // Вывод решения
-   void PrintSolution()
+   // Вывод решения в файл FILE_NAME
+   void PrintSolution(const string& FILE_NAME)
    {
+      ofstream fout(FILE_NAME);
       int w = ceil(log10(N_X * N_Y)) + 2;
 
-      cout << " x          y              calc           prec      dif         ";
+      fout << " x          y              calc           prec      dif         ";
       
       for(int i = 0; i < w - 1; i++)
-         cout << " ";
+         fout << " ";
 
-      cout << "N  location" << endl << fixed;
+      fout << "N  location" << endl << fixed;
       for(int j = 0; j < N_Y; j++)
       {
          for(int i = 0; i < N_X; i++)
@@ -304,30 +309,29 @@ public:
             int n = j * N_X + i;
             //if (i % 2 == 0 && j % 2 == 0)
             {
-               cout << setw(9) << y_node[j];
-               cout << setw(11) << x_node[i];
+               fout << setw(9) << x_node[j];
+               fout << setw(11) << y_node[i];
                double t = slae->xk[n];
-               cout << setw(15) << t;
+               fout << setw(15) << t;
                double tt = 0;
                if (i <= x_bord || j <= y_bord) tt = test.u(x_node[i], y_node[j]);
-               cout << setw(15) << tt;
-               cout << setw(14) << scientific <<
-                  abs(t - tt);
-               cout << fixed << setw(w) << n;
+               fout << setw(15) << tt;
+               fout << setw(14) << scientific << abs(t - tt);
+               fout << fixed << setw(w) << n;
 
                if (i < N_X - 1 && i > 0 &&
                   j < y_bord && j > 0 ||
                   i < x_bord && i > 0 &&
                   j < N_Y - 1 && j > 0)
-                  cout << "  inner";
+                  fout << "  inner";
                else if (i <= x_bord || j <= y_bord)
-                  cout << "  border";
+                  fout << "  border";
                else
-                  cout << "  outer";
-
-               cout << endl;
+                  fout << "  outer";
+               fout << endl;
             }
          }
       }
+      fout.close();
    }
 };
