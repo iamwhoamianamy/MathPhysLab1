@@ -60,6 +60,7 @@ public:
       double h;
 
       fin >> q >> n;
+      q = sqrt(q);
       N_X = n + 1;
       x_bord = n;
       x_node.resize(N_X);
@@ -75,6 +76,7 @@ public:
          x_node[i + 1] = x_node[i] + h * pow(q, i);
 
       fin >> q >> n;
+      q = sqrt(q);
       N_X += n;
       x_node.resize(N_X);
 
@@ -89,6 +91,7 @@ public:
 
       // Генерация координат узлов по Y
       fin >> q >> n;
+      q = sqrt(q);
       N_Y = n + 1;
       y_bord = n;
       y_node.resize(N_Y);
@@ -104,6 +107,7 @@ public:
          y_node[i+1] = y_node[i] + h * pow(q, i);
 
       fin >> q >> n;
+      q = sqrt(q);
       N_Y += n;
       y_node.resize(N_Y);
 
@@ -295,6 +299,7 @@ public:
    {
       ofstream fout(FILE_NAME);
       int w = ceil(log10(N_X * N_Y)) + 2;
+      double norm = 0., norm_u = 0.;
 
       fout << " x          y              calc           prec      dif         ";
       
@@ -329,9 +334,13 @@ public:
                else
                   fout << "  outer";
                fout << endl;
+
+               norm_u += tt * tt;
+               norm += abs(t - tt) * abs(t - tt);
             }
          }
       }
+      fout << "||u-u*||/||u*||" << scientific << sqrt(norm)/sqrt(norm_u);
       fout.close();
    }
 };
