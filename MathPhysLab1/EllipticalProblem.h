@@ -56,11 +56,12 @@ public:
          fin >> y_reg[i];
 
       // Генерация координат узлов по X
-      int q, n;
-      double h;
+      int n;
+      double h, q;
 
       fin >> q >> n;
-      q = sqrt(q);
+      //q = sqrt(q);
+      //q = sqrt(q);
       N_X = n + 1;
       x_bord = n;
       x_node.resize(N_X);
@@ -76,7 +77,8 @@ public:
          x_node[i + 1] = x_node[i] + h * pow(q, i);
 
       fin >> q >> n;
-      q = sqrt(q);
+      //q = sqrt(q);
+      //q = sqrt(q);
       N_X += n;
       x_node.resize(N_X);
 
@@ -91,7 +93,8 @@ public:
 
       // Генерация координат узлов по Y
       fin >> q >> n;
-      q = sqrt(q);
+      //q = sqrt(q);
+      //q = sqrt(q);
       N_Y = n + 1;
       y_bord = n;
       y_node.resize(N_Y);
@@ -107,7 +110,8 @@ public:
          y_node[i+1] = y_node[i] + h * pow(q, i);
 
       fin >> q >> n;
-      q = sqrt(q);
+      //q = sqrt(q);
+      //q = sqrt(q);
       N_Y += n;
       y_node.resize(N_Y);
 
@@ -312,7 +316,7 @@ public:
          for(int i = 0; i < N_X; i++)
          {
             int n = j * N_X + i;
-            //if (i % 2 == 0 && j % 2 == 0)
+            //if (i % 8 == 0 && j % 8 == 0)
             {
                fout << setw(9) << x_node[j];
                fout << setw(11) << y_node[i];
@@ -340,7 +344,8 @@ public:
             }
          }
       }
-      fout << "||u-u*||/||u*||" << scientific << sqrt(norm)/sqrt(norm_u);
+      fout << "||u-u*||/||u*|| = " << scientific << sqrt(norm) / sqrt(norm_u) << endl;
+      fout << "||u-u*|| = " << scientific << sqrt(norm);
       fout.close();
    }
 };
