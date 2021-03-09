@@ -7,7 +7,7 @@ void main()
 {
    EllipticalProblem ep = EllipticalProblem();
 
-   ep.FormGridEven("coords.txt");
+   ep.FormGrid("coords.txt");
 
    ep.ReadBordConditions("borders.txt");
    ep.FormBordConditions();
@@ -16,7 +16,7 @@ void main()
    ep.slae = new SLAE(ep.N_X * ep.N_Y, ep.N_X);
 
    // Инициализация тестовых данных
-   ep.test = Test(5);
+   ep.test = Test(1);
    
    ep.FormMatrix();
 

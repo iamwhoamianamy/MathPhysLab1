@@ -44,7 +44,7 @@ public:
 
    // Функция считывания границ области из файла FILE_NAME
    // и формирования сетки
-   void FormGridEven(const string& FILE_NAME)
+   void FormGrid(const string& FILE_NAME)
    {
       ifstream fin(FILE_NAME);
 
@@ -246,46 +246,46 @@ public:
                      // Если ребро параллельно оси X
                      if(borders[b][3] == borders[b][4])
                      {
-                        double h = x_node[x_cent + 1] - x_node[x_cent - 1];
-
-                        slae->matrix[1][n] = -test.lambda() / h;
-                        slae->matrix[3][n] = +test.lambda() / h;
-
                         // Если нормаль направлена вниз
                         if(y_cent == 0)
                         {
-                           slae->matrix[1][n] *= -1;
-                           slae->matrix[3][n] *= -1;
+                           double dy = y_node[y_cent + 1] - y_node[y_cent];
+                           slae->matrix[2][n] = test.lambda() / dy;
+                           slae->matrix[4][n] = -test.lambda() / dy;
+                           slae->f[n] = test.theta(x_node[x_cent], y_node[y_cent])[0];
                         }
                         // Если нормаль направлена вверх
                         else
                         {
-
+                           double dy = y_node[y_cent] - y_node[y_cent - 1];
+                           slae->matrix[0][n] = -test.lambda() / dy;
+                           slae->matrix[2][n] = test.lambda() / dy;
+                           slae->f[n] = test.theta(x_node[x_cent], y_node[y_cent])[2];
                         }
                      }
                      // Если ребро параллельно оси Y
                      else if(borders[b][1] == borders[b][2])
                      {
-                        double h = y_node[y_cent + 1] - y_node[y_cent - 1];
-
-                        slae->matrix[0][n] = -test.lambda() / h;
-                        slae->matrix[4][n] = +test.lambda() / h;
-
                         // Если нормаль направлена влево
                         if(x_cent == 0)
                         {
-                           slae->matrix[0][n] *= -1;
-                           slae->matrix[4][n] *= -1;
+                           double dx = x_node[x_cent + 1] - x_node[x_cent];
+                           slae->matrix[2][n] = test.lambda() / dx;
+                           slae->matrix[3][n] = -test.lambda() / dx;
+                           slae->f[n] = test.theta(x_node[x_cent], y_node[y_cent])[3];
                         }
                         // Если нормаль направлена вправо
                         else
                         {
-
+                           double dx = x_node[x_cent] - x_node[x_cent - 1];
+                           slae->matrix[1][n] = -test.lambda() / dx;
+                           slae->matrix[2][n] = test.lambda() / dx;
+                           slae->f[n] = test.theta(x_node[x_cent], y_node[y_cent])[1];
                         }
                      }
-
+                     /*
                      slae->matrix[2][n] = test.gamma();
-                     slae->f[n] = test.f(x_node[x_cent], y_node[y_cent]);
+                     slae->f[n] = test.f(x_node[x_cent], y_node[y_cent]);*/
                   }
 
                   break;
@@ -305,7 +305,7 @@ public:
       int w = ceil(log10(N_X * N_Y)) + 2;
       double norm = 0., norm_u = 0.;
 
-      fout << " x          y              calc           prec      dif         ";
+      fout << " y          x              calc           prec      dif         ";
       
       for(int i = 0; i < w - 1; i++)
          fout << " ";
@@ -318,8 +318,8 @@ public:
             int n = j * N_X + i;
             //if (i % 8 == 0 && j % 8 == 0)
             {
-               fout << setw(9) << x_node[j];
-               fout << setw(11) << y_node[i];
+               fout << setw(9) << y_node[j];
+               fout << setw(11) << x_node[i];
                double t = slae->xk[n];
                fout << setw(15) << t;
                double tt = 0;

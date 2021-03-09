@@ -13,17 +13,17 @@ public:
 
    Test() : N(0) {};
 
-   double f(const double& X, const double& Y)
+   double f(const double& x, const double& y)
    {
       switch(N)
       {
-      case(0): return (0)* lambda() + u(X, Y) * gamma();
-      case(1): return (0)* lambda() + u(X, Y) * gamma();
-      case(2): return (-4)* lambda() + u(X, Y) * gamma();
-      case(3): return (-6 * X - 6 * Y) * lambda() + u(X, Y) * gamma();
-      case(4): return (-12 * X * X - 12 * Y * Y) * lambda() + u(X, Y) * gamma();
+      case(0): return (0)* lambda() + u(x, y) * gamma();
+      case(1): return (0)* lambda() + u(x, y) * gamma();
+      case(2): return (-4)* lambda() + u(x, y) * gamma();
+      case(3): return (-6 * x - 6 * y) * lambda() + u(x, y) * gamma();
+      case(4): return (-12 * x * x - 12 * y * y) * lambda() + u(x, y) * gamma();
       //case(5): return (X * X + Y * Y) * sin(X * Y) * lambda() + u(X, Y) * gamma();
-      case(5): return 2 * sin(X + Y) * lambda() + u(X, Y) * gamma();
+      case(5): return 2 * sin(x + y) * lambda() + u(x, y) * gamma();
       };
    }
 
@@ -37,22 +37,27 @@ public:
       return 1;
    }
 
-   double theta()
+   vector<double> theta(const double& x, const double& y)
    {
-      return 1;
+      // Нормали вниз, влево, вверх, вправо
+      switch(N)
+      {
+      case(0): return vector<double>(0, 4); break;
+      case(1): return { -1, 1, 1, -1 }; break;
+      };
    }
 
-   double u(const double& X, const double& Y)
+   double u(const double& x, const double& y)
    {
       switch(N)
       {
       case(0): return 2.0;
-      case(1): return X + Y;
-      case(2): return X * X + Y * Y;
-      case(3): return X * X * X + Y * Y * Y;
-      case(4): return X * X * X * X + Y * Y * Y * Y;
+      case(1): return x + y;
+      case(2): return x * x + y * y;
+      case(3): return x * x * x + y * y * y;
+      case(4): return x * x * x * x + y * y * y * y;
       //case(5): return sin(X * Y);
-      case(5): return sin(X + Y);
+      case(5): return sin(x + y);
       };
    }
 };
