@@ -2,6 +2,7 @@
 #include <vector>
 #include <fstream>
 #include <string>
+#include <iomanip>
 #include "SLAE.h"
 #include "Test.h"
 

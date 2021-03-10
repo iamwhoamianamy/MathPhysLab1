@@ -145,7 +145,6 @@
     <ClInclude Include="EllipticalProblem.h" />
     <ClInclude Include="SLAE.h" />
     <ClInclude Include="Test.h" />
-    <ClInclude Include="Vector.h" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="borders.txt" />

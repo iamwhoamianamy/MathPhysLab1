@@ -56,13 +56,24 @@ public:
       }
    }
 
+   // Норма вектора
+   double Norm(const vector<double>& vec)
+   {
+      double res = 0;
+      for (int i = 0; i < N; i++)
+         res += vec[i] * vec[i];
+
+      return sqrt(res);
+   }
+
    // Получение относительной невязки системы
    double RelativeResidual(vector<double>& vec)
    {
       vector<double> mult(N);
 
       Multiplication(vec, mult);
-      mult = f - mult;
+      for (size_t i = 0; i < N; i++)
+         mult[i] = f[i] - mult[i];
 
       return Norm(mult) / Norm(f);
    }

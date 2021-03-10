@@ -42,6 +42,7 @@ public:
       {
       case(0): return vector<double>(4, 0);
       case(1): return { -1, 1, 1, -1 };
+      case(2): return { -2*x, 2*y, 2*x, -2*y };
       };
    }
 
