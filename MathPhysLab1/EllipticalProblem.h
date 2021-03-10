@@ -283,9 +283,6 @@ public:
                            slae->f[n] = test.theta(x_node[x_cent], y_node[y_cent])[1];
                         }
                      }
-                     /*
-                     slae->matrix[2][n] = test.gamma();
-                     slae->f[n] = test.f(x_node[x_cent], y_node[y_cent]);*/
                   }
 
                   break;
