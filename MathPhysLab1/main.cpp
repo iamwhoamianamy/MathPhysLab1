@@ -16,7 +16,7 @@ void main()
    ep.slae = new SLAE(ep.N_X * ep.N_Y, ep.N_X);
 
    // Инициализация тестовых данных
-   ep.test = Test(2);
+   ep.test = Test(3);
    
    ep.FormMatrix();
 
