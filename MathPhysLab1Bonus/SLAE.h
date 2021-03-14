@@ -106,61 +106,6 @@ public:
          }
          xk.swap(xk1);
          residual = RelativeResidual(xk);
-         //cout << k << " " << residual << endl;
       }
    }
 };
-
-
-//
-//   // Вывод решения в файл FILE_NAME
-//   void PrintSolution(const string& FILE_NAME)
-//   {
-//      ofstream fout(FILE_NAME);
-//      int w = ceil(log10(N_X * N_Y)) + 2;
-//      double norm = 0., norm_u = 0.;
-//
-//      fout << " y          x              calc           prec      dif         ";
-//      
-//      for(int i = 0; i < w - 1; i++)
-//         fout << " ";
-//
-//      fout << "N  location" << endl << fixed;
-//      for(int j = 0; j < N_Y; j++)
-//      {
-//         for(int i = 0; i < N_X; i++)
-//         {
-//            int n = j * N_X + i;
-//            //if (i % 8 == 0 && j % 8 == 0)
-//            {
-//               fout << setw(9) << y_node[j];
-//               fout << setw(11) << x_node[i];
-//               double t = slae->xk[n];
-//               fout << setw(15) << t;
-//               double tt = 0;
-//               if (i <= x_bord || j <= y_bord) tt = test.u(x_node[i], y_node[j]);
-//               fout << setw(15) << tt;
-//               fout << setw(14) << scientific << abs(t - tt);
-//               fout << fixed << setw(w) << n;
-//
-//               if (i < N_X - 1 && i > 0 &&
-//                  j < y_bord && j > 0 ||
-//                  i < x_bord && i > 0 &&
-//                  j < N_Y - 1 && j > 0)
-//                  fout << "  inner";
-//               else if (i <= x_bord || j <= y_bord)
-//                  fout << "  border";
-//               else
-//                  fout << "  outer";
-//               fout << endl;
-//
-//               norm_u += tt * tt;
-//               norm += abs(t - tt) * abs(t - tt);
-//            }
-//         }
-//      }
-//      fout << "||u-u*||/||u*|| = " << scientific << sqrt(norm) / sqrt(norm_u) << endl;
-//      fout << "||u-u*|| = " << scientific << sqrt(norm);
-//      fout.close();
-//   }
-//;

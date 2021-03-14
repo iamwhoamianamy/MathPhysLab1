@@ -174,14 +174,14 @@ public:
                int border_x = 0, border_y = 0;
 
                if(x_cent == 0)
-                  border_x = r->borders[3];
+                  border_x = r->borders[0];
                else if(x_cent == r->n_x - 1)
                   border_x = r->borders[1];
 
                if(y_cent == 0)
-                  border_y = r->borders[0];
-               else if(y_cent == r->n_y - 1)
                   border_y = r->borders[2];
+               else if(y_cent == r->n_y - 1)
+                  border_y = r->borders[3];
 
                // Если узел на границе между соседями
                if(border_x != 1 && border_y != 1 ||
@@ -199,16 +199,6 @@ public:
                   {
                      neib_x = -border_x - 1;
 
-                     // Сосед справа
-                     if(x_cent == r->n_x - 1)
-                     {
-                        neib_right = regions[neib_x].n_x * y_cent + 1;
-                        slae->index[3][global_i] = abs(global_i -
-                           (regions[neib_x].first + neib_right));
-
-                        hi = regions[neib_x].x_node[1] - r->x_node[x_cent + 0];
-                        hi1 = r->x_node[x_cent - 0] - r->x_node[x_cent - 1];
-                     }
                      // Сосед слева
                      if(x_cent == 0)
                      {
@@ -218,6 +208,16 @@ public:
 
                         hi = r->x_node[x_cent + 1] - r->x_node[x_cent + 0];
                         hi1 = r->x_node[x_cent - 0] - regions[neib_x].x_node[regions[neib_x].n_x - 2];
+                     }
+                     // Сосед справа
+                     if(x_cent == r->n_x - 1)
+                     {
+                        neib_right = regions[neib_x].n_x * y_cent + 1;
+                        slae->index[3][global_i] = abs(global_i -
+                           (regions[neib_x].first + neib_right));
+
+                        hi = regions[neib_x].x_node[1] - r->x_node[x_cent + 0];
+                        hi1 = r->x_node[x_cent - 0] - r->x_node[x_cent - 1];
                      }
 
                      if(border_y == 0)
@@ -312,14 +312,14 @@ public:
                int border_x = 0, border_y = 0;
 
                if(x_cent == 0)
-                  border_x = r->borders[3];
+                  border_x = r->borders[0];
                else if(x_cent == r->n_x - 1)
                   border_x = r->borders[1];
           
                if(y_cent == 0)
-                  border_y = r->borders[0];
-               else if(y_cent == r->n_y - 1)
                   border_y = r->borders[2];
+               else if(y_cent == r->n_y - 1)
+                  border_y = r->borders[3];
 
                // Первое краевое
                if(border_x == 1 || border_y == 1)
@@ -387,14 +387,14 @@ public:
                int border_x = 0, border_y = 0;
 
                if(x_cent == 0)
-                  border_x = r->borders[3];
+                  border_x = r->borders[0];
                else if(x_cent == r->n_x - 1)
                   border_x = r->borders[1];
 
                if(y_cent == 0)
-                  border_y = r->borders[0];
-               else if(y_cent == r->n_y - 1)
                   border_y = r->borders[2];
+               else if(y_cent == r->n_y - 1)
+                  border_y = r->borders[3];
 
                // Первое краевое
                if(border_x == 1 || border_y == 1)

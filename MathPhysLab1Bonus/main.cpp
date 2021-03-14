@@ -33,7 +33,7 @@ void main()
    }
 
    // Инициализация тестовых данных
-   ep.test = Test(2);
+   ep.test = Test(3);
    
    // Формирование матрицы системы
    ep.FormMatrix();
