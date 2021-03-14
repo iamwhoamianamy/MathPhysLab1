@@ -146,7 +146,6 @@
     <ClInclude Include="Region.h" />
     <ClInclude Include="SLAE.h" />
     <ClInclude Include="Test.h" />
-    <ClInclude Include="Vector.h" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="regions.txt" />

@@ -115,58 +115,6 @@ public:
       fin.close();
    }
 
-   //   int CorrespondX(const int& I)
-   //   {
-   //      switch(I)
-   //      {
-   //      case(0): return 0;
-   //      case(1): return x_bord;
-   //      case(2): return N_X - 1;
-   //      }
-   //   }
-   //   int CorrespondY(const int& I)
-   //   {
-   //      switch(I)
-   //      {
-   //      case(0): return 0;
-   //      case(1): return y_bord;
-   //      case(2): return N_Y - 1;
-   //      }
-   //   }
-   //
-   //   // Функция считывания индексов для описания краевых условий
-   //   // из файла FILE_NAME
-   //   void ReadBordConditions(const string& FILE_NAME)
-   //   {
-   //      ifstream fin(FILE_NAME);
-   //
-   //      borders.resize(N_BORD);
-   //
-   //      for(int i = 0; i < N_BORD; i++)
-   //      {
-   //         borders[i].resize(5);
-   //
-   //         for(int j = 0; j < 5; j++)
-   //            fin >> borders[i][j];
-   //      }
-   //
-   //      fin.close();
-   //   }
-   //
-   //   // Функция формирования индексов границ ребер с соответсвующими
-   //   // краевыми условиями
-   //   void FormBordConditions()
-   //   {
-   //      for(int i = 0; i < N_BORD; i++)
-   //      {
-   //         borders[i][1] = CorrespondX(borders[i][1]);
-   //         borders[i][2] = CorrespondX(borders[i][2]);
-   //         borders[i][3] = CorrespondY(borders[i][3]);
-   //         borders[i][4] = CorrespondY(borders[i][4]);
-   //      }
-   //   }
-   //
-
    // Формирование матрицы системы
    void FormMatrix()
    {
@@ -223,127 +171,171 @@ public:
             // Обработка краевых узлов
             else
             {
-               int border_i;
+               int border_x = 0, border_y = 0;
 
                if(x_cent == 0)
-                  border_i = 3;
+                  border_x = r->borders[3];
                else if(x_cent == r->n_x - 1)
-                  border_i = 1;
+                  border_x = r->borders[1];
 
                if(y_cent == 0)
-                  border_i = 0;
+                  border_y = r->borders[0];
                else if(y_cent == r->n_y - 1)
-                  border_i = 2;
+                  border_y = r->borders[2];
 
-               // Первое краевое
-               switch(r->borders[border_i])
+               // Если узел на границе между соседями
+               if(border_x != 1 && border_y != 1 ||
+                  border_x != 1 && border_y == 0 ||
+                  border_x == 0 && border_y  != 1)
                {
-                  // Первое краевое
-                  case 0:
-                  {
-                     slae->matrix[0][global_i] = 0;
-                     slae->matrix[1][global_i] = 0;
-                     slae->matrix[2][global_i] = 1.0;
-                     slae->matrix[3][global_i] = 0;
-                     slae->matrix[4][global_i] = 0;
-                     slae->f[global_i] = test.u(r->x_node[x_cent], r->y_node[y_cent]);
-                     break;
-                  }
-                  // Второе краевое
-                  case 1:
-                  {
-                     //switch(border_i)
-                     //{
-                     //// Нормаль направлена вниз
-                     //case 0:
-                     //   double dy = r->y_node[y_cent + 1] - r->y_node[y_cent];
-                     //   slae->matrix[2][global_i] = test.lambda() / dy;
-                     //   slae->matrix[4][global_i] = -test.lambda() / dy;
-                     //   slae->f[global_i] = test.theta(r->x_node[x_cent], r->y_node[y_cent])[0];
-                     //   break;
-                     //// Если нормаль направлена вправо
-                     //case 1:
-                     //   double dx = x_node[x_cent] - x_node[x_cent - 1];
-                     //   slae->matrix[1][n] = -test.lambda() / dx;
-                     //   slae->matrix[2][n] = test.lambda() / dx;
-                     //   slae->f[n] = test.theta(x_node[x_cent], y_node[y_cent])[1];
-                     //   break;
-                     //}
-                     break;
-                  }
-                  // Нет краевого условия
-                  case -1:
-                  {
-                     double hi = 0, hi1 = 0, hj = 0, hj1 = 0;
+                  double hi = 0, hi1 = 0, hj = 0, hj1 = 0;
+                  int neib_x = 0;
+                  int neib_y = 0;
+
+                  int neib_left, neib_right, neib_bot, neib_top;
                      
-                     if(x_cent == 0)
-                        hi1 = hi = r->x_node[x_cent + 1] - r->x_node[x_cent];
-                     else if(x_cent == r->n_x - 1)
-                        hi = hi1 = r->x_node[x_cent] - r->x_node[x_cent - 1];
-                     else
+                  // Если есть сосед по X
+                  if(border_x != 0)
+                  {
+                     neib_x = -border_x - 1;
+
+                     // Сосед справа
+                     if(x_cent == r->n_x - 1)
                      {
-                        hi = r->x_node[x_cent + 1] - r->x_node[x_cent];
-                        hi1 = r->x_node[x_cent] - r->x_node[x_cent - 1];
+                        neib_right = regions[neib_x].n_x * y_cent + 1;
+                        slae->index[3][global_i] = abs(global_i -
+                           (regions[neib_x].first + neib_right));
+
+                        hi = regions[neib_x].x_node[1] - r->x_node[x_cent + 0];
+                        hi1 = r->x_node[x_cent - 0] - r->x_node[x_cent - 1];
+                     }
+                     // Сосед слева
+                     if(x_cent == 0)
+                     {
+                        neib_left = regions[neib_x].n_x * (y_cent + 1) - 2;
+                        slae->index[1][global_i] = -abs(global_i -
+                           (regions[neib_x].first + neib_left));
+
+                        hi = r->x_node[x_cent + 1] - r->x_node[x_cent + 0];
+                        hi1 = r->x_node[x_cent - 0] - regions[neib_x].x_node[regions[neib_x].n_x - 2];
                      }
 
-                     if(y_cent == 0)
-                        hj1 = hj = r->y_node[y_cent + 1] - r->y_node[y_cent];
-                     else if(y_cent == r->n_y - 1)
-                        hj = hj1 = r->y_node[y_cent] - r->y_node[y_cent - 1];
-                     else
+                     if(border_y == 0)
                      {
                         hj = r->y_node[y_cent + 1] - r->y_node[y_cent];
                         hj1 = r->y_node[y_cent] - r->y_node[y_cent - 1];
                      }
-
-                     //// Нижний узел
-                     //if(y_cent != 0)
-                     //   slae->matrix[0][global_i] = -test.lambda() *
-                     //      (2.0 / (hj1 * (hj + hj1)));
-
-                     //// Левый узел
-                     //if(x_cent != 0)
-                     //   slae->matrix[1][global_i] = -test.lambda() *
-                     //      (2.0 / (hi1 * (hi + hi1)));
-
-                     //// Центральный узел
-                     //slae->matrix[2][global_i] = +test.lambda() *
-                     //   (2.0 / (hi1 * hi) + 2.0 / (hj1 * hj)) + test.gamma();
-
-                     //// Правый узел
-                     //if(x_cent != r->n_x - 1)
-                     //   slae->matrix[3][global_i] = -test.lambda() *
-                     //      (2.0 / (hi * (hi + hi1)));
-
-                     //// Верхний узел
-                     //if(y_cent != r->n_y - 1)
-                     //   slae->matrix[4][global_i] = -test.lambda() *
-                     //      (2.0 / (hj * (hj + hj1)));
-
-                     // Нижний узел
-                     slae->matrix[0][global_i] = -test.lambda() *
-                        (2.0 / (hj1 * (hj + hj1)));
-
-                     // Левый узел
-                     slae->matrix[1][global_i] = -test.lambda() *
-                        (2.0 / (hi1 * (hi + hi1)));
-
-                     // Центральный узел
-                     slae->matrix[2][global_i] = +test.lambda() *
-                        (2.0 / (hi1 * hi) + 2.0 / (hj1 * hj)) + test.gamma();
-
-                     // Правый узел
-                     slae->matrix[3][global_i] = -test.lambda() *
-                        (2.0 / (hi * (hi + hi1)));
-
-                     // Верхний узел
-                     slae->matrix[4][global_i] = -test.lambda() *
-                        (2.0 / (hj * (hj + hj1)));
-
-                     // Вектор правой части
-                     slae->f[global_i] = test.f(r->x_node[x_cent], r->y_node[y_cent]);
-                     break;
                   }
+
+                  // Если есть сосед по Y
+                  if(border_y != 0)
+                  {
+                     neib_y = -border_y - 1;
+
+                     // Сосед снизу
+                     if(y_cent == 0)
+                     {
+                        neib_bot = regions[neib_y].n_x * (regions[neib_y].n_y - 2) +
+                           x_cent;
+                        slae->index[0][global_i] = -abs(global_i -
+                           (regions[neib_y].first + neib_bot));
+
+                        hj = r->y_node[y_cent + 1] - r->y_node[y_cent + 0];
+                        hj1 = r->y_node[y_cent - 0] - regions[neib_y].y_node[regions[neib_y].n_y - 2];
+                     }
+
+                     // Сосед сверху
+                     if(y_cent == r->n_y - 1)
+                     {
+                        neib_top = regions[neib_y].n_x + x_cent;
+                        slae->index[4][global_i] = abs(global_i -
+                           (regions[neib_y].first + neib_top));
+
+                        hj = regions[neib_y].y_node[1] - r->y_node[y_cent + 0];
+                        hj1 = r->y_node[y_cent - 0] - r->y_node[y_cent - 1];
+                     }
+
+                     if(border_x == 0)
+                     {
+                        hi = r->x_node[x_cent + 1] - r->x_node[x_cent + 0];
+                        hi1 = r->x_node[x_cent - 0] - r->x_node[x_cent - 1];
+                     }
+                  }
+                  
+                     // Нижний узел
+                  slae->matrix[0][global_i] = -test.lambda() *
+                     (2.0 / (hj1 * (hj + hj1)));
+
+                  // Левый узел
+                  slae->matrix[1][global_i] = -test.lambda() *
+                     (2.0 / (hi1 * (hi + hi1)));
+
+                  // Центральный узел
+                  slae->matrix[2][global_i] = +test.lambda() *
+                     (2.0 / (hi1 * hi) + 2.0 / (hj1 * hj)) + test.gamma();
+
+                  // Правый узел
+                  slae->matrix[3][global_i] = -test.lambda() *
+                     (2.0 / (hi * (hi + hi1)));
+
+                  // Верхний узел
+                  slae->matrix[4][global_i] = -test.lambda() *
+                     (2.0 / (hj * (hj + hj1)));
+
+                  // Вектор правой части
+                  slae->f[global_i] = test.f(r->x_node[x_cent], r->y_node[y_cent]);
+               }
+            }
+         }
+      }
+
+      // Обработка первого кревого условия
+      // Проход по всем регионам
+      for(int reg_i = 0; reg_i < n_regions; reg_i++)
+      {
+         Region* r = &regions[reg_i];
+
+         // Проход по всем узлам региона
+         for(int node_i = 0; node_i < r->n_nodes; node_i++)
+         {
+            // Индекс узла в глобальной нумерации
+            int global_i = node_i + r->first;
+
+            // Индексы центрального узла
+            int x_cent = node_i % r->n_x;
+            int y_cent = floor(node_i / r->n_x);
+
+            // Обработка некраевых узлов
+            if(x_cent == 0 || x_cent == r->n_x - 1 ||
+               0 == y_cent || y_cent == r->n_y - 1)
+            {
+               int border_x = 0, border_y = 0;
+
+               if(x_cent == 0)
+                  border_x = r->borders[3];
+               else if(x_cent == r->n_x - 1)
+                  border_x = r->borders[1];
+          
+               if(y_cent == 0)
+                  border_y = r->borders[0];
+               else if(y_cent == r->n_y - 1)
+                  border_y = r->borders[2];
+
+               // Первое краевое
+               if(border_x == 1 || border_y == 1)
+               {
+                  slae->matrix[0][global_i] = 0;
+                  slae->matrix[1][global_i] = 0;
+                  slae->matrix[2][global_i] = 1.0;
+                  slae->matrix[3][global_i] = 0;
+                  slae->matrix[4][global_i] = 0;
+                  slae->f[global_i] = test.u(r->x_node[x_cent], r->y_node[y_cent]);
+                     
+                  slae->index[0][global_i] = -r->n_x;
+                  slae->index[1][global_i] = -1;
+                  slae->index[2][global_i] = 0;
+                  slae->index[3][global_i] = 1;
+                  slae->index[4][global_i] = r->n_x;
                }
             }
          }
@@ -389,16 +381,40 @@ public:
             // Обработка некраевых узлов
             if(0 < x_cent && x_cent < r->n_x - 1 &&
                0 < y_cent && y_cent < r->n_y - 1)
-            {
                fout << "  inner";
-            }
             else
             {
-               fout << "  border";
+               int border_x = 0, border_y = 0;
+
+               if(x_cent == 0)
+                  border_x = r->borders[3];
+               else if(x_cent == r->n_x - 1)
+                  border_x = r->borders[1];
+
+               if(y_cent == 0)
+                  border_y = r->borders[0];
+               else if(y_cent == r->n_y - 1)
+                  border_y = r->borders[2];
+
+               // Первое краевое
+               if(border_x == 1 || border_y == 1)
+                  fout << "  border";
+               else
+                  if(border_x != 1 && border_y != 1 ||
+                     border_x != 1 && border_y == 0 ||
+                     border_x == 0 && border_y != 1)
+                     fout << "  inner border";
             }
 
-            fout << endl;
+             fout << endl;
+
+             norm_u += prec * prec;
+             norm += abs(calc - prec) * abs(calc - prec);
          }
       }
+
+      fout << "||u-u*||/||u*|| = " << scientific << sqrt(norm) / sqrt(norm_u) << endl;
+      fout << "||u-u*|| = " << scientific << sqrt(norm);
+      fout.close();
    }
 };
