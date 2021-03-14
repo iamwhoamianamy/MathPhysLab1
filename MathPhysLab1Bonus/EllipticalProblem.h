@@ -111,7 +111,6 @@ public:
          for(int bord_i = 0; bord_i < 4; bord_i++)
             fin >> r->borders[bord_i];
       }
-
       fin.close();
    }
 
@@ -261,7 +260,7 @@ public:
                         hi1 = r->x_node[x_cent - 0] - r->x_node[x_cent - 1];
                      }
                   }
-                  
+
                      // Нижний узел
                   slae->matrix[0][global_i] = -test.lambda() *
                      (2.0 / (hj1 * (hj + hj1)));
@@ -342,7 +341,6 @@ public:
       }
    }
 
-
    void PrintSolution(const string& file_name)
    {
       ofstream fout(file_name);
@@ -375,8 +373,7 @@ public:
             fout << setw(15) << prec;
 
             fout << setw(14) << scientific << abs(prec - calc);
-
-            fout << fixed << setw(5) << global_i << setw(4) << reg_i;
+            fout << fixed << setw(5) << global_i << setw(4) << reg_i + 1;
 
             // Обработка некраевых узлов
             if(0 < x_cent && x_cent < r->n_x - 1 &&
@@ -405,14 +402,11 @@ public:
                      border_x == 0 && border_y != 1)
                      fout << "  inner border";
             }
-
              fout << endl;
-
              norm_u += prec * prec;
              norm += abs(calc - prec) * abs(calc - prec);
          }
       }
-
       fout << "||u-u*||/||u*|| = " << scientific << sqrt(norm) / sqrt(norm_u) << endl;
       fout << "||u-u*|| = " << scientific << sqrt(norm);
       fout.close();

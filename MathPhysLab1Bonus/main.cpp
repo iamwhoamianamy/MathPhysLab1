@@ -9,10 +9,6 @@ void main()
 
    ep.ReadFormGrid("regions.txt");
 
-   //ep.ReadBordConditions("borders.txt");
-   //ep.FormBordConditions();
-   //
-
    // Инициализация СЛАУ
    ep.slae = new SLAE(ep.n_nodes);
 
@@ -41,7 +37,4 @@ void main()
    ep.slae->GaussSeidel(10000, 1e-14, 0.65);
 
    ep.PrintSolution("res.txt");
-
-   int ssss = 0;
-   
 }
