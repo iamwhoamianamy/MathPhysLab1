@@ -60,6 +60,10 @@ public:
          double h, q;
 
          fin >> q >> n;
+         q = sqrt(q);
+         q = sqrt(q);
+         q = sqrt(q);
+         q = sqrt(q);
 
          r->n_x = n + 1;
          r->x_node.resize(r->n_x);
@@ -79,6 +83,11 @@ public:
          // Генерация координат узлов по Y
 
          fin >> q >> n;
+         q = sqrt(q);
+         q = sqrt(q);
+         q = sqrt(q);
+         q = sqrt(q);
+
 
          r->n_y = n + 1;
          r->y_node.resize(r->n_y);
@@ -355,56 +364,60 @@ public:
          Region* r = &regions[reg_i];
 
          // Проход по всем узлам региона
-         for(int node_i = 0; node_i < r->n_nodes; node_i++)
+         for (int node_i = 0; node_i < r->n_nodes; node_i++)
          {
             // Индекс узла в глобальной нумерации
             int global_i = node_i + r->first;
 
-            // Индексы центрального узла
-            int x_cent = node_i % r->n_x;
-            int y_cent = floor(node_i / r->n_x);
+            
+               // Индексы центрального узла
+               int x_cent = node_i % r->n_x;
+               int y_cent = floor(node_i / r->n_x);
+               if (x_cent % 32 == 0 && y_cent % 32 == 0)
+               {
 
-            fout << setw(9) << r->y_node[y_cent];
-            fout << setw(11) << r->x_node[x_cent];
+                  fout << setw(9) << r->y_node[y_cent];
+                  fout << setw(11) << r->x_node[x_cent];
 
-            double calc = slae->xk[global_i];
-            fout << setw(15) << calc;
-            double prec = test.u(r->x_node[x_cent], r->y_node[y_cent]);
-            fout << setw(15) << prec;
+                  double calc = slae->xk[global_i];
+                  fout << setw(15) << calc;
+                  double prec = test.u(r->x_node[x_cent], r->y_node[y_cent]);
+                  fout << setw(15) << prec;
 
-            fout << setw(14) << scientific << abs(prec - calc);
-            fout << fixed << setw(5) << global_i << setw(4) << reg_i + 1;
+                  fout << setw(14) << scientific << abs(prec - calc);
+                  fout << fixed << setw(5) << global_i << setw(4) << reg_i + 1;
 
-            // Обработка некраевых узлов
-            if(0 < x_cent && x_cent < r->n_x - 1 &&
-               0 < y_cent && y_cent < r->n_y - 1)
-               fout << "  inner";
-            else
-            {
-               int border_x = 0, border_y = 0;
+                  // Обработка некраевых узлов
+                  if (0 < x_cent && x_cent < r->n_x - 1 &&
+                     0 < y_cent && y_cent < r->n_y - 1)
+                     fout << "  inner";
+                  else
+                  {
+                     int border_x = 0, border_y = 0;
 
-               if(x_cent == 0)
-                  border_x = r->borders[0];
-               else if(x_cent == r->n_x - 1)
-                  border_x = r->borders[1];
+                     if (x_cent == 0)
+                        border_x = r->borders[0];
+                     else if (x_cent == r->n_x - 1)
+                        border_x = r->borders[1];
 
-               if(y_cent == 0)
-                  border_y = r->borders[2];
-               else if(y_cent == r->n_y - 1)
-                  border_y = r->borders[3];
+                     if (y_cent == 0)
+                        border_y = r->borders[2];
+                     else if (y_cent == r->n_y - 1)
+                        border_y = r->borders[3];
 
-               // Первое краевое
-               if(border_x == 1 || border_y == 1)
-                  fout << "  border";
-               else
-                  if(border_x != 1 && border_y != 1 ||
-                     border_x != 1 && border_y == 0 ||
-                     border_x == 0 && border_y != 1)
-                     fout << "  inner border";
-            }
-             fout << endl;
-             norm_u += prec * prec;
-             norm += abs(calc - prec) * abs(calc - prec);
+                     // Первое краевое
+                     if (border_x == 1 || border_y == 1)
+                        fout << "  border";
+                     else
+                        if (border_x != 1 && border_y != 1 ||
+                           border_x != 1 && border_y == 0 ||
+                           border_x == 0 && border_y != 1)
+                           fout << "  inner border";
+                  }
+                  fout << endl;
+                  norm_u += prec * prec;
+                  norm += abs(calc - prec) * abs(calc - prec);
+               }
          }
       }
       fout << "||u-u*||/||u*|| = " << scientific << sqrt(norm) / sqrt(norm_u) << endl;
